@@ -87,6 +87,9 @@ vim.opt.maxmempattern = 20000 -- increase max memory
 vim.g.mapleader = " " -- space for leader
 vim.g.maplocalleader = " " -- space for localleader
 
+vim.keymap.set("n", "H", ":tabprev<CR>")
+vim.keymap.set("n", "L", ":tabnext<CR>")
+
 -- better movement in wrapped text
 vim.keymap.set("n", "j", function()
 	return vim.v.count == 0 and "gj" or "j"
@@ -724,8 +727,8 @@ setup_treesitter()
 
 require("nvim-tree").setup({
 	view = {
-		side = "right",
-		width = 60,
+		side = "left",
+		width = 35,
 	},
 	filters = {
 		dotfiles = false,
@@ -733,31 +736,47 @@ require("nvim-tree").setup({
 	renderer = {
 		group_empty = true,
 	},
-	on_attach = function(bufnr)
-		local api = require("nvim-tree.api")
-		api.config.mappings.default_on_attach(bufnr)
-		vim.keymap.set("n", "l", api.node.open.edit, { buffer = bufnr, silent = true })
-		vim.keymap.set("n", "h", api.node.navigate.parent_close, { buffer = bufnr, silent = true })
-	end,
-})
-
-vim.api.nvim_create_autocmd("BufEnter", {
-	group = augroup,
-	callback = function()
-		local wins = vim.api.nvim_list_wins()
-		local non_tree_wins = vim.tbl_filter(function(w)
-			local buf = vim.api.nvim_win_get_buf(w)
-			return vim.bo[buf].filetype ~= "NvimTree"
-		end, wins)
-		if #non_tree_wins == 0 then
-			vim.cmd("quit")
-		end
-	end,
+	actions = {
+		open_file = {
+			open_tab = {
+				restrict_within_tabline = false,
+			},
+		},
+	},
 })
 
 vim.keymap.set("n", "<leader>e", function()
-	require("nvim-tree.api").tree.open()
+	require("nvim-tree.api").tree.toggle()
 end, { desc = "Toggle NvimTree" })
+
+-- Open files in a new tab by default
+local function on_attach(bufnr)
+	local api = require("nvim-tree.api")
+	local opts = function(desc)
+		return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+	end
+
+	-- Default mappings
+	api.config.mappings.default_on_attach(bufnr)
+
+	-- Override <CR> and o to open in new tab
+	vim.keymap.set("n", "<CR>", api.node.open.tab, opts("Open in new tab"))
+	vim.keymap.set("n", "o", api.node.open.tab, opts("Open in new tab"))
+end
+
+require("nvim-tree").setup({
+	on_attach = on_attach,
+	view = {
+		side = "left",
+		width = 35,
+	},
+	filters = {
+		dotfiles = false,
+	},
+	renderer = {
+		group_empty = true,
+	},
+})
 
 vim.api.nvim_set_hl(0, "NvimTreeNormalNC", { bg = "none" })
 vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
