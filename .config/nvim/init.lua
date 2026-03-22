@@ -151,7 +151,8 @@ end, { desc = "Toggle diagnostics" })
 vim.keymap.set("n", "<leader>tw", function()
 	vim.wo.wrap = not vim.wo.wrap
 end, { desc = "Toggle wrap" })
-
+vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true })
+vim.keymap.set("i", "jk", "<Esc>", { noremap = true, silent = true })
 -- ============================================================================
 -- AUTOCMDS
 -- ============================================================================
@@ -283,6 +284,7 @@ vim.pack.add({
 	"https://github.com/MeanderingProgrammer/render-markdown.nvim",
 	"https://github.com/iamcco/markdown-preview.nvim",
 	"https://github.com/bullets-vim/bullets.vim",
+	"https://github.com/ej-shafran/compile-mode.nvim",
 })
 
 local function packadd(name)
@@ -723,6 +725,9 @@ end
 
 setup_treesitter()
 
+vim.keymap.set("n", "<leader>c", "<cmd>vert Recompile<CR>")
+vim.keymap.set("n", "<leader>v", ":vert Compile ")
+
 -- NVIM-TREE
 
 require("nvim-tree").setup({
@@ -1026,7 +1031,7 @@ local function lsp_on_attach(ev)
 		vim.lsp.buf.definition()
 	end, opts)
 
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, opts)
 	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 
 	vim.keymap.set("n", "<leader>D", function()
@@ -1076,6 +1081,7 @@ vim.keymap.set("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Show line
 require("blink.cmp").setup({
 	keymap = {
 		preset = "default",
+		["<CR>"] = { "accept", "fallback" },
 	},
 	appearance = { nerd_font_variant = "mono" },
 	completion = { menu = { auto_show = true } },
@@ -1272,4 +1278,5 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+vim.g.compile_mode = {}
 setup_alpha()

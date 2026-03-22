@@ -17,6 +17,10 @@
       "rev": "89294b8930e660936374fb763ac48a1ac51dd29c",
       "src": "https://github.com/bullets-vim/bullets.vim"
     },
+    "compile-mode.nvim": {
+      "rev": "6b41499bd782be2c213011072ce0f0eb9f7b78a2",
+      "src": "https://github.com/ej-shafran/compile-mode.nvim"
+    },
     "efmls-configs-nvim": {
       "rev": "2dd907fe0043b95a901a9aee814f17804aa4426d",
       "src": "https://github.com/creativenull/efmls-configs-nvim"
